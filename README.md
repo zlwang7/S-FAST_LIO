@@ -9,6 +9,7 @@ S-FAST_LIO is a simplified implementation of FAST_LIO (Xu, Wei, et al. "Fast-lio
 * Support for Robosense LiDAR has been added
 
 In addition, the following links are also my previous works. I strongly recommend reading them, since they are the interpretation and detailed equation derivation of FAST-LIO paper:
+
 [FAST-LIO论文解读与详细公式推导(知乎)](https://zhuanlan.zhihu.com/p/587500859)
 
 [FAST-LIO论文解读与详细公式推导(CSDN)](https://blog.csdn.net/weixin_44923488/article/details/128103159)
