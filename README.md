@@ -11,6 +11,7 @@ S-FAST_LIO is a simplified implementation of FAST_LIO (Xu, Wei, et al. "Fast-lio
 In addition, the following links are also my previous works. I strongly recommend reading them, since they are the interpretation and detailed equation derivation of FAST-LIO paper:
 
 https://zhuanlan.zhihu.com/p/587500859
+
 https://blog.csdn.net/weixin_44923488/article/details/128103159
 
 <div align=center>
