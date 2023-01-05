@@ -107,7 +107,7 @@ around 140m. The average number of effective feature points is 2015. All algorit
 
 
 
-A|Average processing time|Drift|
+|Average processing time|Drift|
 :--:|:--:|:--:|
 FAST-LIO|7.52ms|0.035%|
 S-FAST_LIO|7.07ms|0.037%|
