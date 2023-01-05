@@ -684,7 +684,7 @@ int main(int argc, char** argv)
             // publish_map(pubLaserCloudMap);
 
             double t11 = omp_get_wtime();
-            // std::cout << "Whole mapping time(ms):  " << (t11 - t00)*1000 << std::endl;
+            // std::cout << "feats_down_size: " <<  feats_down_size << "  Whole mapping time(ms):  " << (t11 - t00)*1000 << std::endl<< std::endl;
         }
 
         rate.sleep();

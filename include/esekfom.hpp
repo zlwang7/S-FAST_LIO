@@ -103,6 +103,11 @@ namespace esekfom
 			laserCloudOri->clear();
 			corr_normvect->clear();
 
+			#ifdef MP_EN
+    			omp_set_num_threads(MP_PROC_NUM);
+			#pragma omp parallel for
+			#endif  
+
 			for (int i = 0; i < feats_down_size; i++) //遍历所有的特征点
 			{
 				PointType &point_body = feats_down_body->points[i];
@@ -118,6 +123,8 @@ namespace esekfom
 
 				vector<float> pointSearchSqDis(NUM_MATCH_POINTS);
 				auto &points_near = Nearest_Points[i]; // Nearest_Points[i]打印出来发现是按照离point_world距离，从小到大的顺序的vector
+
+				double ta = omp_get_wtime();
 				if (ekfom_data.converge)
 				{
 					//寻找point_world的最近邻的平面点
@@ -167,7 +174,7 @@ namespace esekfom
 			}
 
 			// 雅可比矩阵H和残差向量的计算
-			ekfom_data.h_x = MatrixXd::Zero(effct_feat_num, 24);
+			ekfom_data.h_x = MatrixXd::Zero(effct_feat_num, 12);
 			ekfom_data.h.resize(effct_feat_num);
 
 			for (int i = 0; i < effct_feat_num; i++)
@@ -238,7 +245,7 @@ namespace esekfom
 			vectorized_state dx_new = vectorized_state::Zero(); // 24X1的向量
 
 			for (int i = -1; i < maximum_iter; i++)	 // maximum_iter是卡尔曼滤波的最大迭代次数
-			{
+			{				
 				dyn_share.valid = true;
 				// 计算雅克比，也就是点面残差的导数 H(代码里是h_x)
 				h_share_model(dyn_share, feats_down_body, ikdtree, Nearest_Points, extrinsic_est); 
@@ -251,17 +258,25 @@ namespace esekfom
 				vectorized_state dx;
 				dx_new = boxminus(x_, x_propagated);  //公式(18)中的 x^k - x^
 
-				auto H = dyn_share.h_x;
+				//由于H矩阵是稀疏的，只有前12列有非零元素，后12列是零 因此这里采用分块矩阵的形式计算 减少计算量
+				auto H = dyn_share.h_x;  // m X 12 的矩阵
+				Eigen::Matrix<double, 24, 24> HTH = Matrix<double, 24, 24>::Zero();   //矩阵 H^T * H
+				HTH.block<12, 12>(0, 0) = H.transpose() * H;
+
+				auto K_front = (HTH / R + P_.inverse()).inverse();
 				Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> K;
-				K = (H.transpose()* H / R + P_.inverse()).inverse() * H.transpose() / R ;   //卡尔曼增益  这里R视为常数
-				Matrix<double, 24, 1> dx_ = K * dyn_share.h + (K*H - Matrix<double, 24, 24>::Identity()) * dx_new;   //公式(18)
+				K = K_front.block<24, 12>(0, 0) * H.transpose() / R;  //卡尔曼增益  这里R视为常数
+
+				Eigen::Matrix<double, 24, 24> KH = Matrix<double, 24, 24>::Zero();   //矩阵 K * H
+				KH.block<24, 12>(0, 0) = K * H;
+				Matrix<double, 24, 1> dx_ = K * dyn_share.h + (KH - Matrix<double, 24, 24>::Identity()) * dx_new;   //公式(18)
 
 				x_ = boxplus(x_, dx_);	//公式(18)
 
 				dyn_share.converge = true;
-				for(int i = 0; i < 24 ; i++)
+				for(int j = 0; j < 24 ; j++)
 				{
-					if(std::fabs(dx_[i]) > epsi)        //如果dx>epsi 认为没有收敛
+					if(std::fabs(dx_[j]) > epsi)        //如果dx>epsi 认为没有收敛
 					{
 						dyn_share.converge = false;
 						break;
@@ -277,7 +292,7 @@ namespace esekfom
 
 				if(t > 1 || i == maximum_iter - 1)
 				{
-					P_ = (Matrix<double, 24, 24>::Identity() - K * H) * P_ ;     //公式(19)
+					P_ = (Matrix<double, 24, 24>::Identity() - KH) * P_ ;     //公式(19)
 					return;
 				}
  

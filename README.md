@@ -98,6 +98,21 @@ rosbag play YOUR_DOWNLOADED.bag
 The same as [FAST_LIO](https://github.com/hku-mars/FAST_LIO).
 
 
-## 5.Acknowledgements
-Thanks for the authors of [FAST-LIO](https://github.com/hku-mars/FAST_LIO).
+## 5. Performance Comparison
+Here we use the dataset (The Main Building in the University of
+Hong Kong) in FAST-LIO paper.
+The sensor suite is handheld during the data
+collection and returned to the starting position after traveling
+around 140m. The average number of effective feature points is 2015. All algorithms are tested on an Intel i7 2.3 GHz processor-based computer.
 
+
+|Average processing time|Drift|
+:--:|:--:|:--:|
+FAST-LIO|7.52ms|0.035%|
+S-FAST_LIO|7.07ms|0.037%|
+
+
+
+
+## 6. Acknowledgements
+Thanks for the authors of [FAST-LIO](https://github.com/hku-mars/FAST_LIO).
