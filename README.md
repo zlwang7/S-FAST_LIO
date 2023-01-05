@@ -106,7 +106,8 @@ collection and returned to the starting position after traveling
 around 140m. The average number of effective feature points is 2015. All algorithms are tested on an Intel i7 2.3 GHz processor-based computer.
 
 
-|Average processing time|Drift|
+
+A|Average processing time|Drift|
 :--:|:--:|:--:|
 FAST-LIO|7.52ms|0.035%|
 S-FAST_LIO|7.07ms|0.037%|
