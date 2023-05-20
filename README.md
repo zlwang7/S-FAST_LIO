@@ -6,6 +6,7 @@ S-FAST_LIO is a simplified implementation of FAST_LIO (Xu, Wei, et al. "Fast-lio
 * The gravity component is directly defined by a Vector3d, thus the complicated calculation of two-dimensional manifold can be omitted
 * The code structure has been optimized, and the unnecessary codes have been deleted
 * Detailed Chinese notes are added to the code
+* Add relocation function in established maps
 * Support for Robosense LiDAR has been added
 
  In addition, the following links are also my previous works. I strongly recommend reading them, since they are the interpretation and detailed equation derivation of the FAST-LIO paper:
