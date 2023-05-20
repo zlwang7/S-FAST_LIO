@@ -2,15 +2,13 @@ common:
 #RS LiDar
     lid_topic: "/rslidar_points"
     imu_topic: "/imu/data"
-    # lid_topic: "/rslidar_points1"
-    # imu_topic: "/imu/data1"
     time_sync_en: false         # ONLY turn on when external time synchronization is really not possible
     
 preprocess:
     lidar_type: 4                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 4 RS
     scan_line: 32
     scan_rate: 10                # only need to be set for velodyne, unit: Hz,
-    blind: 4
+    blind: 3
 
 mapping:
     acc_cov: 0.1
@@ -20,6 +18,8 @@ mapping:
     fov_degree:    180
     det_range:     100.0
     extrinsic_est_en:  true      # true: enable the online estimation of IMU-LiDAR extrinsic,
+    init_pos: [1.0, 1.0, 1.0]
+    init_rot: [0, 0, 0, 1]
     extrinsic_T: [ 0, 0, -0.1]
     extrinsic_R: [ 1, 0, 0,
                    0, 1, 0,
@@ -32,5 +32,5 @@ publish:
     scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
 
 pcd_save:
-    pcd_save_en: false
+    pcd_save_en: true
     interval: 100                 # how many LiDAR frames saved in each pcd file; 

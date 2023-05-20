@@ -14,7 +14,7 @@
 
 //该hpp主要包含：广义加减法，前向传播主函数，计算特征点残差及其雅可比，ESKF主函数
 
-const double epsi = 0.001;    	  //ESKF迭代时，如果dx<epsi 认为收敛
+const double epsi = 0.001; // ESKF迭代时，如果dx<epsi 认为收敛
 
 namespace esekfom
 {
@@ -23,22 +23,21 @@ namespace esekfom
 	PointCloudXYZI::Ptr normvec(new PointCloudXYZI(100000, 1));		  //特征点在地图中对应的平面参数(平面的单位法向量,以及当前点到平面距离)
 	PointCloudXYZI::Ptr laserCloudOri(new PointCloudXYZI(100000, 1)); //有效特征点
 	PointCloudXYZI::Ptr corr_normvect(new PointCloudXYZI(100000, 1)); //有效特征点对应点法相量
-	bool point_selected_surf[100000] = {1};	   //判断是否是有效特征点
+	bool point_selected_surf[100000] = {1};							  //判断是否是有效特征点
 
 	struct dyn_share_datastruct
 	{
-		bool valid;			//有效特征点数量是否满足要求
-		bool converge;		//迭代时，是否已经收敛
+		bool valid;												   //有效特征点数量是否满足要求
+		bool converge;											   //迭代时，是否已经收敛
 		Eigen::Matrix<double, Eigen::Dynamic, 1> h;				   //残差	(公式(14)中的z)
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> h_x; //雅可比矩阵H (公式(14)中的H)
 	};
 
-	
 	class esekf
 	{
 	public:
-		typedef Matrix<double, 24, 24> cov; 			// 24X24的协方差矩阵
-		typedef Matrix<double, 24, 1> vectorized_state;	// 24X1的向量
+		typedef Matrix<double, 24, 24> cov;				// 24X24的协方差矩阵
+		typedef Matrix<double, 24, 1> vectorized_state; // 24X1的向量
 
 		esekf(){};
 		~esekf(){};
@@ -69,8 +68,8 @@ namespace esekfom
 			state_ikfom x_r;
 			x_r.pos = x.pos + f_.block<3, 1>(0, 0);
 
-			x_r.rot = x.rot * Sophus::SO3::exp(f_.block<3, 1>(3, 0) );
-			x_r.offset_R_L_I = x.offset_R_L_I * Sophus::SO3::exp(f_.block<3, 1>(6, 0) );
+			x_r.rot = x.rot * Sophus::SO3::exp(f_.block<3, 1>(3, 0));
+			x_r.offset_R_L_I = x.offset_R_L_I * Sophus::SO3::exp(f_.block<3, 1>(6, 0));
 
 			x_r.offset_T_L_I = x.offset_T_L_I + f_.block<3, 1>(9, 0);
 			x_r.vel = x.vel + f_.block<3, 1>(12, 0);
@@ -80,7 +79,7 @@ namespace esekfom
 
 			return x_r;
 		}
-		
+
 		//前向传播  公式(4-8)
 		void predict(double &dt, Eigen::Matrix<double, 12, 12> &Q, const input_ikfom &i_in)
 		{
@@ -88,7 +87,7 @@ namespace esekfom
 			Eigen::Matrix<double, 24, 24> f_x_ = df_dx(x_, i_in); //公式(7)的df/dx
 			Eigen::Matrix<double, 24, 12> f_w_ = df_dw(x_, i_in); //公式(7)的df/dw
 
-			x_ = boxplus(x_, f_*dt); //前向传播 公式(4)
+			x_ = boxplus(x_, f_ * dt); //前向传播 公式(4)
 
 			f_x_ = Matrix<double, 24, 24>::Identity() + f_x_ * dt; //之前Fx矩阵里的项没加单位阵，没乘dt   这里补上
 
@@ -103,10 +102,10 @@ namespace esekfom
 			laserCloudOri->clear();
 			corr_normvect->clear();
 
-			#ifdef MP_EN
-    			omp_set_num_threads(MP_PROC_NUM);
-			#pragma omp parallel for
-			#endif  
+#ifdef MP_EN
+			omp_set_num_threads(MP_PROC_NUM);
+#pragma omp parallel for
+#endif
 
 			for (int i = 0; i < feats_down_size; i++) //遍历所有的特征点
 			{
@@ -142,7 +141,7 @@ namespace esekfom
 				if (esti_plane(pabcd, points_near, 0.1f))
 				{
 					float pd2 = pabcd(0) * point_world.x + pabcd(1) * point_world.y + pabcd(2) * point_world.z + pabcd(3); //当前点到平面的距离
-					float s = 1 - 0.9 * fabs(pd2) / sqrt(p_body.norm()); //如果残差大于经验阈值，则认为该点是有效点  简言之，距离原点越近的lidar点  要求点到平面的距离越苛刻
+					float s = 1 - 0.9 * fabs(pd2) / sqrt(p_body.norm());												   //如果残差大于经验阈值，则认为该点是有效点  简言之，距离原点越近的lidar点  要求点到平面的距离越苛刻
 
 					if (s > 0.9) //如果残差大于阈值，则认为该点是有效点
 					{
@@ -195,7 +194,7 @@ namespace esekfom
 				V3D A(point_I_crossmat * C);
 				if (extrinsic_est)
 				{
-					V3D B(point_crossmat * x_.offset_R_L_I.matrix().transpose() * C); 
+					V3D B(point_crossmat * x_.offset_R_L_I.matrix().transpose() * C);
 					ekfom_data.h_x.block<1, 12>(i, 0) << norm_p.x, norm_p.y, norm_p.z, VEC_FROM_ARRAY(A), VEC_FROM_ARRAY(B), VEC_FROM_ARRAY(C);
 				}
 				else
@@ -205,20 +204,18 @@ namespace esekfom
 
 				//残差：点面距离
 				ekfom_data.h(i) = -norm_p.intensity;
-
 			}
-
 		}
 
 		//广义减法
-		vectorized_state boxminus(state_ikfom x1, state_ikfom x2 )
+		vectorized_state boxminus(state_ikfom x1, state_ikfom x2)
 		{
 			vectorized_state x_r = vectorized_state::Zero();
 
 			x_r.block<3, 1>(0, 0) = x1.pos - x2.pos;
 
-			x_r.block<3, 1>(3, 0) = Sophus::SO3( x2.rot.matrix().transpose() * x1.rot.matrix() ).log() ;
-			x_r.block<3, 1>(6, 0) = Sophus::SO3( x2.offset_R_L_I.matrix().transpose() * x1.offset_R_L_I.matrix() ).log() ;
+			x_r.block<3, 1>(3, 0) = Sophus::SO3(x2.rot.matrix().transpose() * x1.rot.matrix()).log();
+			x_r.block<3, 1>(6, 0) = Sophus::SO3(x2.offset_R_L_I.matrix().transpose() * x1.offset_R_L_I.matrix()).log();
 
 			x_r.block<3, 1>(9, 0) = x1.offset_T_L_I - x2.offset_T_L_I;
 			x_r.block<3, 1>(12, 0) = x1.vel - x2.vel;
@@ -229,7 +226,7 @@ namespace esekfom
 			return x_r;
 		}
 
-		//ESKF
+		// ESKF
 		void update_iterated_dyn_share_modified(double R, PointCloudXYZI::Ptr &feats_down_body,
 												KD_TREE<PointType> &ikdtree, vector<PointVector> &Nearest_Points, int maximum_iter, bool extrinsic_est)
 		{
@@ -244,58 +241,58 @@ namespace esekfom
 
 			vectorized_state dx_new = vectorized_state::Zero(); // 24X1的向量
 
-			for (int i = -1; i < maximum_iter; i++)	 // maximum_iter是卡尔曼滤波的最大迭代次数
-			{				
+			for (int i = -1; i < maximum_iter; i++) // maximum_iter是卡尔曼滤波的最大迭代次数
+			{
 				dyn_share.valid = true;
 				// 计算雅克比，也就是点面残差的导数 H(代码里是h_x)
-				h_share_model(dyn_share, feats_down_body, ikdtree, Nearest_Points, extrinsic_est); 
+				h_share_model(dyn_share, feats_down_body, ikdtree, Nearest_Points, extrinsic_est);
 
-				if(! dyn_share.valid)
+				if (!dyn_share.valid)
 				{
 					continue;
 				}
 
 				vectorized_state dx;
-				dx_new = boxminus(x_, x_propagated);  //公式(18)中的 x^k - x^
+				dx_new = boxminus(x_, x_propagated); //公式(18)中的 x^k - x^
 
 				//由于H矩阵是稀疏的，只有前12列有非零元素，后12列是零 因此这里采用分块矩阵的形式计算 减少计算量
-				auto H = dyn_share.h_x;  // m X 12 的矩阵
-				Eigen::Matrix<double, 24, 24> HTH = Matrix<double, 24, 24>::Zero();   //矩阵 H^T * H
+				auto H = dyn_share.h_x;												// m X 12 的矩阵
+				Eigen::Matrix<double, 24, 24> HTH = Matrix<double, 24, 24>::Zero(); //矩阵 H^T * H
 				HTH.block<12, 12>(0, 0) = H.transpose() * H;
 
 				auto K_front = (HTH / R + P_.inverse()).inverse();
 				Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> K;
-				K = K_front.block<24, 12>(0, 0) * H.transpose() / R;  //卡尔曼增益  这里R视为常数
+				K = K_front.block<24, 12>(0, 0) * H.transpose() / R; //卡尔曼增益  这里R视为常数
 
-				Eigen::Matrix<double, 24, 24> KH = Matrix<double, 24, 24>::Zero();   //矩阵 K * H
+				Eigen::Matrix<double, 24, 24> KH = Matrix<double, 24, 24>::Zero(); //矩阵 K * H
 				KH.block<24, 12>(0, 0) = K * H;
-				Matrix<double, 24, 1> dx_ = K * dyn_share.h + (KH - Matrix<double, 24, 24>::Identity()) * dx_new;   //公式(18)
-
-				x_ = boxplus(x_, dx_);	//公式(18)
+				Matrix<double, 24, 1> dx_ = K * dyn_share.h + (KH - Matrix<double, 24, 24>::Identity()) * dx_new; //公式(18)
+				// std::cout << "dx_: " << dx_.transpose() << std::endl;
+				x_ = boxplus(x_, dx_); //公式(18)
 
 				dyn_share.converge = true;
-				for(int j = 0; j < 24 ; j++)
+				for (int j = 0; j < 24; j++)
 				{
-					if(std::fabs(dx_[j]) > epsi)        //如果dx>epsi 认为没有收敛
+					if (std::fabs(dx_[j]) > epsi) //如果dx>epsi 认为没有收敛
 					{
 						dyn_share.converge = false;
 						break;
 					}
 				}
 
-				if(dyn_share.converge) t++;
+				if (dyn_share.converge)
+					t++;
 
-				if(!t && i == maximum_iter - 2)  //如果迭代了3次还没收敛 强制令成true，h_share_model函数中会重新寻找近邻点
+				if (!t && i == maximum_iter - 2) //如果迭代了3次还没收敛 强制令成true，h_share_model函数中会重新寻找近邻点
 				{
 					dyn_share.converge = true;
 				}
 
-				if(t > 1 || i == maximum_iter - 1)
+				if (t > 1 || i == maximum_iter - 1)
 				{
-					P_ = (Matrix<double, 24, 24>::Identity() - KH) * P_ ;     //公式(19)
+					P_ = (Matrix<double, 24, 24>::Identity() - KH) * P_; //公式(19)
 					return;
 				}
- 
 			}
 		}
 
