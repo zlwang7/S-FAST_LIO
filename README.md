@@ -94,6 +94,12 @@ roslaunch sfast_lio mapping_rs.launch
 rosbag play YOUR_DOWNLOADED.bag
 ```
 
+ ## 4. Relocalization
+ It can relocalization in an established map. First, establish the map and note that *pcd_save_en* is set to true in the yaml file. Then, set the initial position and quaternion for relocalization, and run:
+```
+roslaunch sfast_lio mapping_rs_relocalization.launch
+rosbag play YOUR_DOWNLOADED.bag
+```
 
 ## 4. Directly Run
 The same as [FAST_LIO](https://github.com/hku-mars/FAST_LIO).
