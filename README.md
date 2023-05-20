@@ -95,17 +95,17 @@ rosbag play YOUR_DOWNLOADED.bag
 ```
 
  ## 4. Relocalization
- It can relocalization in an established map. First, establish the map and note that *pcd_save_en* is set to true in the yaml file. Then, set the initial position and quaternion for relocalization, and run:
+ It can relocalization in an established map. First, establish the map and note that *pcd_save_en* is set to true in the yaml file. Then, set the initial position and quaternion in yaml for relocalization, and run:
 ```
 roslaunch sfast_lio mapping_rs_relocalization.launch
 rosbag play YOUR_DOWNLOADED.bag
 ```
 
-## 4. Directly Run
+## 5. Directly Run
 The same as [FAST_LIO](https://github.com/hku-mars/FAST_LIO).
 
 
-## 5. Performance Comparison
+## 6. Performance Comparison
 Here we use the dataset (The Main Building in the University of
 Hong Kong) in FAST-LIO paper.
 The sensor suite is handheld during the data
@@ -122,5 +122,5 @@ S-FAST_LIO|7.07ms|0.037%|
 
 
 
-## 6. Acknowledgements
+## 7. Acknowledgements
 Thanks for the authors of [FAST-LIO](https://github.com/hku-mars/FAST_LIO).
