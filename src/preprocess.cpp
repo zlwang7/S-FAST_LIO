@@ -1026,7 +1026,6 @@ void Preprocess::rs_handler(const sensor_msgs::PointCloud2_<allocator<void>>::Co
 
     if (i % point_filter_num == 0)
     {
-      //这里滤掉了Z>4的点 也可以不滤
       if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > (blind * blind) )
       {
         pl_surf.points.push_back(added_pt);

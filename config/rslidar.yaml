@@ -32,5 +32,5 @@ publish:
     scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
 
 pcd_save:
-    pcd_save_en: true
+    pcd_save_en: false
     interval: 100                 # how many LiDAR frames saved in each pcd file; 
