@@ -124,3 +124,5 @@ S-FAST_LIO|7.07ms|0.037%|
 
 ## 7. Acknowledgements
 Thanks for the authors of [FAST-LIO](https://github.com/hku-mars/FAST_LIO).
+
+![Star History Chart](https://api.star-history.com/svg?repos=zlwang7/S-FAST_LIO&type=Date)
