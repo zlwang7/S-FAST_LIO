@@ -550,7 +550,7 @@ int main(int argc, char **argv)
 
     nh.param<bool>("publish/path_en", path_en, true);
     nh.param<bool>("publish/scan_publish_en", scan_pub_en, true);            // 是否发布当前正在扫描的点云的topic
-    nh.param<bool>("publish/dense_publish_en", dense_pub_en, true);          // 是否发布经过运动畸变校正注册到IMU坐标系的点云的topic
+    nh.param<bool>("publish/dense_publish_en", dense_pub_en, true);          // 发布降采样前的点云还是降采样之后的数据的topic
     nh.param<bool>("publish/scan_bodyframe_pub_en", scan_body_pub_en, true); // 是否发布经过运动畸变校正注册到IMU坐标系的点云的topic，需要该变量和上一个变量同时为true才发布
     nh.param<int>("max_iteration", NUM_MAX_ITERATIONS, 4);                   // 卡尔曼滤波的最大迭代次数
     nh.param<string>("map_file_path", map_file_path, "");                    // 地图保存路径
