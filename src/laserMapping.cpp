@@ -680,9 +680,6 @@ int main(int argc, char **argv)
             Nearest_Points.resize(feats_down_size); //存储近邻点的vector
             kf.update_iterated_dyn_share_modified(LASER_POINT_COV, feats_down_body, ikdtree, Nearest_Points, NUM_MAX_ITERATIONS, extrinsic_est_en);
 
-            state_point = kf.get_x();
-            pos_lid = state_point.pos + state_point.rot.matrix() * state_point.offset_T_L_I;
-
             /******* Publish odometry *******/
             publish_odometry(pubOdomAftMapped);
 
